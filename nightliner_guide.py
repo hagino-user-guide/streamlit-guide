@@ -22,30 +22,23 @@ def main():
     amenity_blanket_photo = image_data_uri("amenity_blanket.jpg")
     amenity_set_photo = image_data_uri("amenity_set.jpg")
     
-# 🎯 画面外枠（Streamlit標準のヘッダー・フッター等）を消去するCSS & スマホスクロール対策
-    st.markdown(
-        """
+    # 🎯 画面外枠（Streamlit標準のヘッダー・フッター等）を消去するCSS
+    st.markdown("""
         <style>
-        /* 📱 スマホのスクロールバグを防ぐ設定 */
-        html, body, [data-testid="stAppViewContainer"] {
-            overflow: auto !important;
-            height: auto !important;
+        header, [data-testid="stHeader"], footer, #MainMenu, [data-testid="stSidebar"], [data-testid="stTopBar"], div[data-testid="stTextInput"] { 
+            display: none !important; 
         }
-        
-        /* 🚫 ヘッダー・フッター等を消す設定 */
-        header, [data-testid="stHeader"], footer, #MainMenu, [data-testid="stSidebar"], [data-testid="stTopBar"], div[data-testid="stDecoration"] {
-            display: none !important;
-        }
-
-        /* 🎨 元々のデザイン設定（余白や背景色） */
         .block-container { padding: 0rem !important; max-width: 100% !important; margin: 0 !important; }
         [data-testid="stAppViewContainer"] { background-color: #E2E8F0 !important; }
         div[data-testid="stVerticalBlock"] { gap: 0rem !important; padding: 0 !important; margin: 0 !important; }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
         
+                /* ── 🆘 困ったとき：スマートフォン行動ガイド ── */
+
+            
+                /* ── 🆘 困ったとき：完成度を高める微調整 ── */
+            </style>
+    """, unsafe_allow_html=True)
+
     # 🎯 メインのアプリ風UI（HTML / CSS / JavaScript）
     html = """
         <!DOCTYPE html>
@@ -57,7 +50,7 @@ def main():
             <style>
                 /* ── 全体ベーススタイル ── */
                 html, body {
-                    margin: 0; padding: 0; min-height: 100%; height: auto; background-color: #E2E8F0;
+                    margin: 0; padding: 0; min-height: 100%; background-color: #E2E8F0;
                     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
                     display: flex; justify-content: center; overflow-x: hidden; overflow-y: visible;
                     pointer-events: auto !important;
@@ -66,7 +59,7 @@ def main():
                     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
                 }
                 .app-wrapper {
-                    width: 100%; max-width: 430px; background-color: #FFFFFF; min-height: 100%; height: auto;
+                    width: 100%; max-width: 430px; background-color: #FFFFFF; min-height: 100%;
                     box-shadow: 0 0 30px rgba(0,0,0,0.1); display: flex; flex-direction: column;
                     box-sizing: border-box; overflow-x: hidden; overflow-y: visible; position: relative; z-index: 10;
                 }
@@ -111,7 +104,7 @@ def main():
                 .app-header p { position: relative; z-index: 2; font-size: 12.2px !important; color: #FFFFFF !important; margin: 0 !important; font-weight: 500 !important; opacity: 0.9; line-height: 1.42 !important; max-width: 320px; }
                 
                 /* ── 後続パーツのスタイル（変更なし） ── */
-                .app-scroll-body { flex: none; overflow-x: hidden; overflow-y: visible; padding: 8px 16px calc(60px + env(safe-area-inset-bottom, 0px)) 16px; box-sizing: border-box; background-color: #FFFFFF; display: flex; flex-direction: column; width: 100%; position: relative; z-index: 10; }
+                .app-scroll-body { flex: 1; overflow-x: hidden; overflow-y: visible; padding: 8px 16px calc(60px + env(safe-area-inset-bottom, 0px)) 16px; box-sizing: border-box; background-color: #FFFFFF; display: flex; flex-direction: column; width: 100%; position: relative; z-index: 10; }
                 .page-view { display: none; width: 100%; box-sizing: border-box; }
                 .page-view.active { display: flex !important; flex-direction: column !important; }
 
@@ -977,7 +970,7 @@ def main():
                 .station-emergency-points span { display:flex; align-items:center; gap:6px; color:#7C2D12; background:#FFFFFF; border:1px solid #FFEDD5; border-radius:9px; padding:7px 9px; font-size:11.5px; font-weight:800; line-height:1.35; }
                 .station-phone-btn { width:100%; min-height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:7px; background:#FFFFFF; border:1px solid #FDBA74; color:#C2410C; text-decoration:none; font-size:13px; font-weight:900; box-sizing:border-box; }
                 .station-map-btn { min-height:44px; display:flex; align-items:center; justify-content:center; gap:7px; background:linear-gradient(135deg, #10B981 0%, #059669 100%) !important; border-radius:11px; width:100%; padding:12px; color:white; font-size:13px; font-weight:900; border:none; cursor:pointer; box-sizing:border-box; box-shadow:0 8px 16px rgba(16,185,129,.14); }
-                .floating-top-btn { position: fixed !important; bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important; right: max(20px, env(safe-area-inset-right, 0px)) !important; width: 50px !important; height: 50px !important; border-radius: 25px !important; background: #005bac !important; color: white !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; box-shadow: 0 4px 16px rgba(0,0,0,0.2) !important; cursor: pointer !important; z-index: 9999 !important; border: none !important; }
+                 .floating-top-btn { position: fixed !important; bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important; right: calc(20px + env(safe-area-inset-right, 0px)) !important; width: 50px !important; height: 50px !important; border-radius: 25px !important; background: #005bac !important; color: white !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; box-shadow: 0 4px 16px rgba(0,0,0,0.2) !important; cursor: pointer !important; z-index: 9999 !important; border: none !important; }
                 .floating-top-btn i { font-size: 16px; margin-bottom: 2px; }
                 .floating-top-btn span { font-size: 8.5px; font-weight: 900; }
 
@@ -2396,6 +2389,54 @@ def main():
             <script>
                 function initApp() {
                     const kitchenSink = document.getElementById('js-scroll-body');
+
+                    function syncStreamlitFrameHeight() {
+                        const appWrapper = document.getElementById('js-app-wrapper');
+                        const measuredHeight = appWrapper
+                            ? Math.ceil(appWrapper.getBoundingClientRect().height)
+                            : 0;
+                        const height = Math.max(
+                            1000,
+                            measuredHeight,
+                            document.documentElement.scrollHeight,
+                            document.body.scrollHeight
+                        );
+
+                        // srcdoc iframe自身の高さを直接更新できる環境ではこちらを優先。
+                        try {
+                            if (window.frameElement) {
+                                window.frameElement.style.height = height + 'px';
+                                window.frameElement.setAttribute('height', String(height));
+                            }
+                        } catch (error) {
+                            // Community Cloudのサンドボックス制約時はpostMessage側で調整する。
+                        }
+
+                        window.parent.postMessage({
+                            isStreamlitMessage: true,
+                            type: 'streamlit:setFrameHeight',
+                            height: height
+                        }, '*');
+                    }
+
+                    let resizeFrameTimer = null;
+                    function scheduleFrameHeightSync() {
+                        window.clearTimeout(resizeFrameTimer);
+                        resizeFrameTimer = window.setTimeout(syncStreamlitFrameHeight, 50);
+                    }
+
+                    if (window.ResizeObserver) {
+                        const frameResizeObserver = new ResizeObserver(scheduleFrameHeightSync);
+                        const observedAppWrapper = document.getElementById('js-app-wrapper');
+                        if (observedAppWrapper) {
+                            frameResizeObserver.observe(observedAppWrapper);
+                        } else {
+                            frameResizeObserver.observe(document.body);
+                        }
+                    }
+                    window.addEventListener('load', scheduleFrameHeightSync);
+                    window.addEventListener('resize', scheduleFrameHeightSync);
+                    scheduleFrameHeightSync();
                     const mask = document.getElementById('app_modal');
                     const modalBody = document.getElementById('app_modal_scroll_body');
                     const modalTitle = document.getElementById('modal_title');
@@ -2797,6 +2838,7 @@ def main():
                                 document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
                                 targetPage.classList.add('active');
                                 if (kitchenSink) kitchenSink.scrollTop = 0;
+                                scheduleFrameHeightSync();
                             }
                         });
                     });
@@ -2808,6 +2850,7 @@ def main():
                             const homePage = document.getElementById('page-home');
                             if (homePage) homePage.classList.add('active');
                             if (kitchenSink) kitchenSink.scrollTop = 0;
+                            scheduleFrameHeightSync();
                         });
                     });
 
@@ -3037,55 +3080,11 @@ def main():
                     }
 
                     const floatTopBtn = document.getElementById('js-float-top');
-                    if (floatTopBtn) {
+                    if (floatTopBtn && kitchenSink) {
                         floatTopBtn.addEventListener('click', function() {
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                            try {
-                                window.parent.scrollTo({ top: 0, behavior: 'smooth' });
-                            } catch (e) {
-                                window.parent.postMessage({ type: 'nightliner:scrollTop' }, '*');
-                            }
+                            window.parent.scrollTo({ top: 0, behavior: 'smooth' });
                         });
                     }
-
-
-
-                    // Streamlit iframeをコンテンツの実高に追従させ、内部スクロールを作らない
-                    const notifyStreamlitHeight = () => {
-                        const height = Math.max(
-                            document.documentElement.scrollHeight,
-                            document.body.scrollHeight,
-                            document.documentElement.offsetHeight,
-                            document.body.offsetHeight
-                        );
-                        window.parent.postMessage({
-                            isStreamlitMessage: true,
-                            type: 'streamlit:setFrameHeight',
-                            height: height
-                        }, '*');
-                    };
-
-                    let heightRaf = null;
-                    const scheduleHeightUpdate = () => {
-                        if (heightRaf) cancelAnimationFrame(heightRaf);
-                        heightRaf = requestAnimationFrame(() => {
-                            notifyStreamlitHeight();
-                            heightRaf = null;
-                        });
-                    };
-
-                    if ('ResizeObserver' in window) {
-                        const resizeObserver = new ResizeObserver(scheduleHeightUpdate);
-                        resizeObserver.observe(document.documentElement);
-                        resizeObserver.observe(document.body);
-                        const appWrapper = document.getElementById('js-app-wrapper');
-                        if (appWrapper) resizeObserver.observe(appWrapper);
-                    }
-                    window.addEventListener('load', scheduleHeightUpdate);
-                    window.addEventListener('resize', scheduleHeightUpdate);
-                    document.addEventListener('click', scheduleHeightUpdate, true);
-                    setTimeout(scheduleHeightUpdate, 0);
-                    setTimeout(scheduleHeightUpdate, 300);
 
                     const foodBtn = document.getElementById('js-trigger-manner-food');
                     if (foodBtn) {
@@ -3119,7 +3118,7 @@ def main():
         .replace("__AMENITY_BLANKET_PHOTO__", amenity_blanket_photo)
         .replace("__AMENITY_SET_PHOTO__", amenity_set_photo)
     )
-    st.components.v1.html(html, height=1, scrolling=False)
+    st.components.v1.html(html, height=1200, scrolling=False)
 
 if __name__ == "__main__":
     main()
