@@ -11,8 +11,7 @@ ASSET_DIR = BASE_DIR / "assets"
 def image_data_uri(filename):
     path = ASSET_DIR / filename
     if not path.exists():
-          st.error(f"画像が見つかりません: {filename}")
-    return ""
+        return ""
     return "data:image/jpeg;base64," + base64.b64encode(path.read_bytes()).decode("ascii")
 
 def main():
@@ -22,26 +21,6 @@ def main():
     overhead_photo = image_data_uri("seat_overhead_console.jpg")
     amenity_blanket_photo = image_data_uri("amenity_blanket.jpg")
     amenity_set_photo = image_data_uri("amenity_set.jpg")
-    def main():
-    st.set_page_config(page_title="NIGHTLINER App Guide", layout="wide")
-
-    seat3_photo = image_data_uri("seat_3_main.jpg")
-    seat4_photo = image_data_uri("seat_4_main.jpg")
-    overhead_photo = image_data_uri("seat_overhead_console.jpg")
-    amenity_blanket_photo = image_data_uri("amenity_blanket.jpg")
-    amenity_set_photo = image_data_uri("amenity_set.jpg")
-
-    # ↓↓↓ この下に追加 ↓↓↓
-    st.write({
-        "seat3_exists": (ASSET_DIR / "seat_3_main.jpg").exists(),
-        "seat3_uri_length": len(seat3_photo),
-    })
-
-    st.image(str(ASSET_DIR / "seat_3_main.jpg"))
-
-    # ↑↑↑ ここまで追加 ↑↑↑
-
-    st.markdown("""
     
     # 🎯 画面外枠（Streamlit標準のヘッダー・フッター等）を消去するCSS
     st.markdown("""
@@ -73,14 +52,14 @@ def main():
                 html, body {
                     margin: 0; padding: 0; min-height: 100%; background-color: #E2E8F0;
                     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-                    display: flex; justify-content: center; overflow-x: hidden; overflow-y: visible;
+                    display: block; width: 100%; overflow-x: hidden; overflow-y: visible;
                     pointer-events: auto !important;
                 }
                 body, input, select, button, textarea {
                     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
                 }
                 .app-wrapper {
-                    width: 100%; max-width: 430px; background-color: #FFFFFF; min-height: 100%;
+                    width: 100%; max-width: 430px; background-color: #FFFFFF; min-height: 0; margin: 0 auto;
                     box-shadow: 0 0 30px rgba(0,0,0,0.1); display: flex; flex-direction: column;
                     box-sizing: border-box; overflow-x: hidden; overflow-y: visible; position: relative; z-index: 10;
                 }
@@ -991,7 +970,7 @@ def main():
                 .station-emergency-points span { display:flex; align-items:center; gap:6px; color:#7C2D12; background:#FFFFFF; border:1px solid #FFEDD5; border-radius:9px; padding:7px 9px; font-size:11.5px; font-weight:800; line-height:1.35; }
                 .station-phone-btn { width:100%; min-height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:7px; background:#FFFFFF; border:1px solid #FDBA74; color:#C2410C; text-decoration:none; font-size:13px; font-weight:900; box-sizing:border-box; }
                 .station-map-btn { min-height:44px; display:flex; align-items:center; justify-content:center; gap:7px; background:linear-gradient(135deg, #10B981 0%, #059669 100%) !important; border-radius:11px; width:100%; padding:12px; color:white; font-size:13px; font-weight:900; border:none; cursor:pointer; box-sizing:border-box; box-shadow:0 8px 16px rgba(16,185,129,.14); }
-                 .floating-top-btn { position: fixed !important; bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important; right: calc(20px + env(safe-area-inset-right, 0px)) !important; width: 50px !important; height: 50px !important; border-radius: 25px !important; background: #005bac !important; color: white !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; box-shadow: 0 4px 16px rgba(0,0,0,0.2) !important; cursor: pointer !important; z-index: 9999 !important; border: none !important; }
+                .floating-top-btn { position: fixed !important; bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important; right: calc(20px + env(safe-area-inset-right, 0px)) !important; width: 50px !important; height: 50px !important; border-radius: 25px !important; background: #005bac !important; color: white !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; box-shadow: 0 4px 16px rgba(0,0,0,0.2) !important; cursor: pointer !important; z-index: 9999 !important; border: none !important; }
                 .floating-top-btn i { font-size: 16px; margin-bottom: 2px; }
                 .floating-top-btn span { font-size: 8.5px; font-weight: 900; }
 
@@ -2413,25 +2392,12 @@ def main():
 
                     function syncStreamlitFrameHeight() {
                         const appWrapper = document.getElementById('js-app-wrapper');
-                        const measuredHeight = appWrapper
-                            ? Math.ceil(appWrapper.getBoundingClientRect().height)
-                            : 0;
-                        const height = Math.max(
-                            1000,
-                            measuredHeight,
-                            document.documentElement.scrollHeight,
-                            document.body.scrollHeight
+                        const contentHeight = Math.max(
+                            appWrapper ? Math.ceil(appWrapper.scrollHeight) : 0,
+                            Math.ceil(document.body.scrollHeight),
+                            Math.ceil(document.documentElement.scrollHeight)
                         );
-
-                        // srcdoc iframe自身の高さを直接更新できる環境ではこちらを優先。
-                        try {
-                            if (window.frameElement) {
-                                window.frameElement.style.height = height + 'px';
-                                window.frameElement.setAttribute('height', String(height));
-                            }
-                        } catch (error) {
-                            // Community Cloudのサンドボックス制約時はpostMessage側で調整する。
-                        }
+                        const height = Math.max(880, contentHeight + 2);
 
                         window.parent.postMessage({
                             isStreamlitMessage: true,
@@ -2440,24 +2406,29 @@ def main():
                         }, '*');
                     }
 
-                    let resizeFrameTimer = null;
+                    let frameHeightTimer = null;
                     function scheduleFrameHeightSync() {
-                        window.clearTimeout(resizeFrameTimer);
-                        resizeFrameTimer = window.setTimeout(syncStreamlitFrameHeight, 50);
+                        window.clearTimeout(frameHeightTimer);
+                        frameHeightTimer = window.setTimeout(syncStreamlitFrameHeight, 60);
+                    }
+
+                    function scrollBrowserToTop() {
+                        try {
+                            window.parent.scrollTo({ top: 0, behavior: 'smooth' });
+                        } catch (error) {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
                     }
 
                     if (window.ResizeObserver) {
+                        const appWrapper = document.getElementById('js-app-wrapper');
                         const frameResizeObserver = new ResizeObserver(scheduleFrameHeightSync);
-                        const observedAppWrapper = document.getElementById('js-app-wrapper');
-                        if (observedAppWrapper) {
-                            frameResizeObserver.observe(observedAppWrapper);
-                        } else {
-                            frameResizeObserver.observe(document.body);
-                        }
+                        frameResizeObserver.observe(appWrapper || document.body);
                     }
                     window.addEventListener('load', scheduleFrameHeightSync);
                     window.addEventListener('resize', scheduleFrameHeightSync);
                     scheduleFrameHeightSync();
+
                     const mask = document.getElementById('app_modal');
                     const modalBody = document.getElementById('app_modal_scroll_body');
                     const modalTitle = document.getElementById('modal_title');
@@ -2858,8 +2829,7 @@ def main():
                                 homePage.className = 'page-view';
                                 document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
                                 targetPage.classList.add('active');
-                                if (kitchenSink) kitchenSink.scrollTop = 0;
-                                scheduleFrameHeightSync();
+                                scrollBrowserToTop();
                             }
                         });
                     });
@@ -2870,8 +2840,7 @@ def main():
                             if (parentPage) parentPage.classList.remove('active');
                             const homePage = document.getElementById('page-home');
                             if (homePage) homePage.classList.add('active');
-                            if (kitchenSink) kitchenSink.scrollTop = 0;
-                            scheduleFrameHeightSync();
+                            scrollBrowserToTop();
                         });
                     });
 
@@ -3101,10 +3070,8 @@ def main():
                     }
 
                     const floatTopBtn = document.getElementById('js-float-top');
-                    if (floatTopBtn && kitchenSink) {
-                        floatTopBtn.addEventListener('click', function() {
-                            window.parent.scrollTo({ top: 0, behavior: 'smooth' });
-                        });
+                    if (floatTopBtn) {
+                        floatTopBtn.addEventListener('click', scrollBrowserToTop);
                     }
 
                     const foodBtn = document.getElementById('js-trigger-manner-food');
