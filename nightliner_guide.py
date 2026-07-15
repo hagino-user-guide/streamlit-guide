@@ -2,17 +2,7 @@ import base64
 from pathlib import Path
 
 import streamlit as st
-st.markdown(
-    """
-    <style>
-    html, body, [data-testid="stAppViewContainer"] {
-        overflow: auto !important;
-        height: auto !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+
 
 BASE_DIR = Path(__file__).resolve().parent
 ASSET_DIR = BASE_DIR / "assets"
@@ -32,15 +22,29 @@ def main():
     amenity_blanket_photo = image_data_uri("amenity_blanket.jpg")
     amenity_set_photo = image_data_uri("amenity_set.jpg")
     
-    # 🎯 画面外枠（Streamlit標準のヘッダー・フッター等）を消去するCSS
-    st.markdown("""
+# 🎯 画面外枠（Streamlit標準のヘッダー・フッター等）を消去するCSS & スマホスクロール対策
+    st.markdown(
+        """
         <style>
-        header, [data-testid="stHeader"], footer, #MainMenu, [data-testid="stSidebar"], [data-testid="stTopBar"], div[data-testid="stTextInput"] { 
-            display: none !important; 
+        /* 📱 スマホのスクロールバグを防ぐ設定 */
+        html, body, [data-testid="stAppViewContainer"] {
+            overflow: auto !important;
+            height: auto !important;
         }
+        
+        /* 🚫 ヘッダー・フッター等を消す設定 */
+        header, [data-testid="stHeader"], footer, #MainMenu, [data-testid="stSidebar"], [data-testid="stTopBar"], div[data-testid="stDecoration"] {
+            display: none !important;
+        }
+
+        /* 🎨 元々のデザイン設定（余白や背景色） */
         .block-container { padding: 0rem !important; max-width: 100% !important; margin: 0 !important; }
         [data-testid="stAppViewContainer"] { background-color: #E2E8F0 !important; }
         div[data-testid="stVerticalBlock"] { gap: 0rem !important; padding: 0 !important; margin: 0 !important; }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
         
                 /* ── 🆘 困ったとき：スマートフォン行動ガイド ── */
 
