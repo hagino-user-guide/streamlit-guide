@@ -2,7 +2,17 @@ import base64
 from pathlib import Path
 
 import streamlit as st
-
+st.markdown(
+    """
+    <style>
+    html, body, [data-testid="stAppViewContainer"] {
+        overflow: auto !important;
+        height: auto !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 BASE_DIR = Path(__file__).resolve().parent
 ASSET_DIR = BASE_DIR / "assets"
