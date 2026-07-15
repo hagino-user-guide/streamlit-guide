@@ -22,6 +22,26 @@ def main():
     overhead_photo = image_data_uri("seat_overhead_console.jpg")
     amenity_blanket_photo = image_data_uri("amenity_blanket.jpg")
     amenity_set_photo = image_data_uri("amenity_set.jpg")
+    def main():
+    st.set_page_config(page_title="NIGHTLINER App Guide", layout="wide")
+
+    seat3_photo = image_data_uri("seat_3_main.jpg")
+    seat4_photo = image_data_uri("seat_4_main.jpg")
+    overhead_photo = image_data_uri("seat_overhead_console.jpg")
+    amenity_blanket_photo = image_data_uri("amenity_blanket.jpg")
+    amenity_set_photo = image_data_uri("amenity_set.jpg")
+
+    # ↓↓↓ この下に追加 ↓↓↓
+    st.write({
+        "seat3_exists": (ASSET_DIR / "seat_3_main.jpg").exists(),
+        "seat3_uri_length": len(seat3_photo),
+    })
+
+    st.image(str(ASSET_DIR / "seat_3_main.jpg"))
+
+    # ↑↑↑ ここまで追加 ↑↑↑
+
+    st.markdown("""
     
     # 🎯 画面外枠（Streamlit標準のヘッダー・フッター等）を消去するCSS
     st.markdown("""
