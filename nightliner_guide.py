@@ -2392,12 +2392,28 @@ def main():
 
                     function syncStreamlitFrameHeight() {
                         const appWrapper = document.getElementById('js-app-wrapper');
+                        const scrollBody = document.getElementById('js-scroll-body');
+                        const activePage = document.querySelector('.page-view.active');
+
                         const contentHeight = Math.max(
                             appWrapper ? Math.ceil(appWrapper.scrollHeight) : 0,
+                            scrollBody ? Math.ceil(scrollBody.scrollHeight) : 0,
+                            activePage ? Math.ceil(activePage.scrollHeight + activePage.getBoundingClientRect().top) : 0,
                             Math.ceil(document.body.scrollHeight),
-                            Math.ceil(document.documentElement.scrollHeight)
+                            Math.ceil(document.body.offsetHeight),
+                            Math.ceil(document.documentElement.scrollHeight),
+                            Math.ceil(document.documentElement.offsetHeight)
                         );
-                        const height = Math.max(880, contentHeight + 2);
+                        const height = Math.max(1200, contentHeight + 24);
+
+                        try {
+                            if (window.frameElement) {
+                                window.frameElement.style.height = height + 'px';
+                                window.frameElement.setAttribute('height', String(height));
+                            }
+                        } catch (error) {
+                            // iframeの直接更新が許可されない環境ではpostMessageのみ使用。
+                        }
 
                         window.parent.postMessage({
                             isStreamlitMessage: true,
@@ -2409,22 +2425,73 @@ def main():
                     let frameHeightTimer = null;
                     function scheduleFrameHeightSync() {
                         window.clearTimeout(frameHeightTimer);
-                        frameHeightTimer = window.setTimeout(syncStreamlitFrameHeight, 60);
+                        frameHeightTimer = window.setTimeout(syncStreamlitFrameHeight, 40);
+
+                        // CSSトランジションや画像描画後の高さも拾う。
+                        window.setTimeout(syncStreamlitFrameHeight, 160);
+                        window.setTimeout(syncStreamlitFrameHeight, 420);
                     }
 
                     function scrollBrowserToTop() {
+                        // ページ切替時は、以前のブラウザスクロール位置を引き継がない。
+                        // smooth指定は高さ再計算と競合するため、即時で先頭へ戻す。
+                        window.scrollTo(0, 0);
+
                         try {
-                            window.parent.scrollTo({ top: 0, behavior: 'smooth' });
+                            if (window.frameElement) {
+                                window.frameElement.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'auto' });
+                            }
                         } catch (error) {
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                            // サンドボックス環境では親画面側の直接操作が制限される場合がある。
                         }
+
+                        try {
+                            window.parent.scrollTo(0, 0);
+                        } catch (error) {
+                            // frameElement.scrollIntoView側で先頭位置を合わせる。
+                        }
+
+                        // ページ表示・iframe高さ更新後にも、念のため先頭位置を確定する。
+                        window.requestAnimationFrame(function() {
+                            window.scrollTo(0, 0);
+                            try {
+                                if (window.frameElement) {
+                                    window.frameElement.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'auto' });
+                                }
+                            } catch (error) {}
+                        });
                     }
 
                     if (window.ResizeObserver) {
-                        const appWrapper = document.getElementById('js-app-wrapper');
                         const frameResizeObserver = new ResizeObserver(scheduleFrameHeightSync);
-                        frameResizeObserver.observe(appWrapper || document.body);
+                        [
+                            document.getElementById('js-app-wrapper'),
+                            document.getElementById('js-scroll-body'),
+                            document.body,
+                            document.documentElement
+                        ].forEach(function(target) {
+                            if (target) frameResizeObserver.observe(target);
+                        });
                     }
+
+                    if (window.MutationObserver) {
+                        const frameMutationObserver = new MutationObserver(scheduleFrameHeightSync);
+                        const mutationTarget = document.getElementById('js-app-wrapper') || document.body;
+                        frameMutationObserver.observe(mutationTarget, {
+                            subtree: true,
+                            childList: true,
+                            attributes: true,
+                            attributeFilter: ['class', 'style', 'src', 'aria-hidden', 'aria-expanded']
+                        });
+                    }
+
+                    document.querySelectorAll('img').forEach(function(image) {
+                        if (!image.complete) {
+                            image.addEventListener('load', scheduleFrameHeightSync, { once: true });
+                            image.addEventListener('error', scheduleFrameHeightSync, { once: true });
+                        }
+                    });
+
                     window.addEventListener('load', scheduleFrameHeightSync);
                     window.addEventListener('resize', scheduleFrameHeightSync);
                     scheduleFrameHeightSync();
@@ -2865,6 +2932,7 @@ def main():
 
                             acc.classList.toggle('open', willOpen);
                             header.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+                            scheduleFrameHeightSync();
                         };
 
                         header.addEventListener('click', toggleAccordion);
@@ -3106,7 +3174,7 @@ def main():
         .replace("__AMENITY_BLANKET_PHOTO__", amenity_blanket_photo)
         .replace("__AMENITY_SET_PHOTO__", amenity_set_photo)
     )
-    st.components.v1.html(html, height=1200, scrolling=False)
+    st.components.v1.html(html, height=1400, scrolling=False)
 
 if __name__ == "__main__":
     main()
