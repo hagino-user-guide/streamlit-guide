@@ -924,8 +924,8 @@ def main():
 
                 /* モーダルポップアップ設定 */
                 .modal-mask {
-                    position: fixed !important; top: 0 !important; left: 0 !important;
-                    width: 100vw !important; height: 100vh !important;
+                    position: absolute !important; top: 0; left: 0 !important;
+                    width: 100% !important; height: 100vh;
                     background: rgba(15,23,42,0.6) !important;
                     display: none; align-items: center; justify-content: center;
                     padding: 16px; box-sizing: border-box; z-index: 999999 !important;
@@ -2991,12 +2991,39 @@ def main():
                         }
                     }
 
+                    function positionModalInVisibleViewport() {
+                        if (!mask) return;
+
+                        let visibleTop = 0;
+                        let visibleHeight = Math.max(320, window.innerHeight || 0);
+
+                        try {
+                            if (window.frameElement) {
+                                const frameRect = window.frameElement.getBoundingClientRect();
+                                visibleTop = Math.max(0, Math.round(-frameRect.top));
+                            }
+                            if (window.parent && window.parent.innerHeight) {
+                                visibleHeight = Math.max(320, Math.round(window.parent.innerHeight));
+                            }
+                        } catch (error) {
+                            // 親画面へ直接アクセスできない場合はiframe内の値を使用する。
+                        }
+
+                        mask.style.position = 'absolute';
+                        mask.style.top = visibleTop + 'px';
+                        mask.style.left = '0';
+                        mask.style.width = '100%';
+                        mask.style.height = visibleHeight + 'px';
+                    }
+
                     function openModal(title, html) {
                         if(mask && modalTitle && modalBody) {
+                            positionModalInVisibleViewport();
                             mask.classList.add('show');
                             modalTitle.innerText = title;
                             modalBody.innerHTML = html;
                             bindModalEvents();
+                            scheduleFrameHeightSync();
                         }
                     }
                     
