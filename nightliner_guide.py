@@ -46,13 +46,6 @@ def main():
         unsafe_allow_html=True
     )
         
-/* ── 🆘 困ったとき：スマートフォン行動ガイド ── */
-
-            
-/* ── 🆘 困ったとき：完成度を高める微調整 ── */
-            </style>
-    """, unsafe_allow_html=True)
-
     # 🎯 メインのアプリ風UI（HTML / CSS / JavaScript）
     html = """
         <!DOCTYPE html>
