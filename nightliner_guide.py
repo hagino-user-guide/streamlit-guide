@@ -11,6 +11,7 @@ ASSET_DIR = BASE_DIR / "assets"
 def image_data_uri(filename):
     path = ASSET_DIR / filename
     if not path.exists():
+          st.error(f"画像が見つかりません: {filename}")
         return ""
     return "data:image/jpeg;base64," + base64.b64encode(path.read_bytes()).decode("ascii")
 
