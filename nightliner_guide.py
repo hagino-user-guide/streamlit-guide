@@ -24,33 +24,27 @@ def image_data_uri(filename):
 
 def main():
     st.set_page_config(page_title="NIGHTLINER App Guide", layout="wide")
-    st.write("### 📁 assetsフォルダの中にある実際のファイル一覧:")
-    if ASSET_DIR.exists():
-        files = [f.name for f in ASSET_DIR.iterdir()]
-        st.write(files if files else "⚠️ assetsフォルダの中にファイルが1つも入っていません！")
-    else:
-        st.write("⚠️ assetsフォルダ自体が見つかりません！")
-    seat3_photo = image_data_uri("seat_3_left_window_original_web.jpg")
-    seat4_photo = image_data_uri("seat_4_aisle_guide_web.jpg")
-    overhead_photo = image_data_uri("seat_overhead_console_web.jpg")
-    recline_position_photo = image_data_uri("seat_recline_position_web.jpg")
-    recline_operation_photo = image_data_uri("seat_recline_operation_web.jpg")
-    seat4_recline_aisle_position_photo = image_data_uri("seat4_recline_aisle_position_web.jpg")
-    seat4_recline_aisle_operation_photo = image_data_uri("seat4_recline_aisle_operation_web.jpg")
-    seat4_recline_window_position_photo = image_data_uri("seat4_recline_window_position_web.jpg")
-    seat4_recline_window_operation_photo = image_data_uri("seat4_recline_window_operation_web.jpg")
-    seat4_power_usb_photo = image_data_uri("seat4_power_usb_web.jpg")
-    air_vent_open_photo = image_data_uri("seat_air_vent_open_web.jpg")
-    air_vent_closed_photo = image_data_uri("seat_air_vent_closed_web.jpg")
-    side_table_unlock_photo = image_data_uri("seat_side_table_unlock_web.jpg")
-    side_table_deployed_photo = image_data_uri("seat_side_table_deployed_web.jpg")
-    legrest_operation_photo = image_data_uri("seat_legrest_operation_web.jpg")
-    armrest_lever_position_photo = image_data_uri("seat_armrest_lever_position_web.jpg")
-    armrest_lever_operation_photo = image_data_uri("seat_armrest_lever_operation_web.jpg")
-    footrest_photo = image_data_uri("seat_footrest_web.jpg")
-    amenity_blanket_photo = image_data_uri("amenity_blanket_web.jpg")
-    amenity_set_photo = image_data_uri("amenity_set_web.jpg")
-    
+   seat3_photo = image_data_uri("seat_3_main.jpg")
+    seat4_photo = image_data_uri("seat_4_main.jpg")
+    overhead_photo = image_data_uri("seat_overhead_console.jpg")
+    amenity_blanket_photo = image_data_uri("amenity_blanket.jpg")
+    amenity_set_photo = image_data_uri("amenity_set.jpg")
+
+    recline_position_photo = ""
+    recline_operation_photo = ""
+    seat4_recline_aisle_position_photo = ""
+    seat4_recline_aisle_operation_photo = ""
+    seat4_recline_window_position_photo = ""
+    seat4_recline_window_operation_photo = ""
+    seat4_power_usb_photo = ""
+    air_vent_open_photo = ""
+    air_vent_closed_photo = ""
+    side_table_unlock_photo = ""
+    side_table_deployed_photo = ""
+    legrest_operation_photo = ""
+    armrest_lever_position_photo = ""
+    armrest_lever_operation_photo = ""
+    footrest_photo = ""
     # 🎯 画面外枠（Streamlit標準のヘッダー・フッター等）を消去するCSS
     st.markdown("""
         <style>
