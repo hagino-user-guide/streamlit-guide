@@ -24,6 +24,12 @@ def image_data_uri(filename):
 
 def main():
     st.set_page_config(page_title="NIGHTLINER App Guide", layout="wide")
+    st.write("### 📁 assetsフォルダの中にある実際のファイル一覧:")
+    if ASSET_DIR.exists():
+        files = [f.name for f in ASSET_DIR.iterdir()]
+        st.write(files if files else "⚠️ assetsフォルダの中にファイルが1つも入っていません！")
+    else:
+        st.write("⚠️ assetsフォルダ自体が見つかりません！")
     seat3_photo = image_data_uri("seat_3_left_window_original_web.jpg")
     seat4_photo = image_data_uri("seat_4_aisle_guide_web.jpg")
     overhead_photo = image_data_uri("seat_overhead_console_web.jpg")
