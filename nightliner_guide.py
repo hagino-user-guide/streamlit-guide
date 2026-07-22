@@ -12,15 +12,36 @@ def image_data_uri(filename):
     path = ASSET_DIR / filename
     if not path.exists():
         return ""
-    return "data:image/jpeg;base64," + base64.b64encode(path.read_bytes()).decode("ascii")
+    mime = {
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+        ".webp": "image/webp",
+    }.get(path.suffix.lower(), "application/octet-stream")
+    return f"data:{mime};base64," + base64.b64encode(path.read_bytes()).decode("ascii")
 
 def main():
     st.set_page_config(page_title="NIGHTLINER App Guide", layout="wide")
-    seat3_photo = image_data_uri("seat_3_main.jpg")
-    seat4_photo = image_data_uri("seat_4_main.jpg")
-    overhead_photo = image_data_uri("seat_overhead_console.jpg")
-    amenity_blanket_photo = image_data_uri("amenity_blanket.jpg")
-    amenity_set_photo = image_data_uri("amenity_set.jpg")
+    seat3_photo = image_data_uri("seat_3_left_window_original_web.jpg")
+    seat4_photo = image_data_uri("seat_4_aisle_guide_web.jpg")
+    overhead_photo = image_data_uri("seat_overhead_console_web.jpg")
+    recline_position_photo = image_data_uri("seat_recline_position_web.jpg")
+    recline_operation_photo = image_data_uri("seat_recline_operation_web.jpg")
+    seat4_recline_aisle_position_photo = image_data_uri("seat4_recline_aisle_position_web.jpg")
+    seat4_recline_aisle_operation_photo = image_data_uri("seat4_recline_aisle_operation_web.jpg")
+    seat4_recline_window_position_photo = image_data_uri("seat4_recline_window_position_web.jpg")
+    seat4_recline_window_operation_photo = image_data_uri("seat4_recline_window_operation_web.jpg")
+    seat4_power_usb_photo = image_data_uri("seat4_power_usb_web.jpg")
+    air_vent_open_photo = image_data_uri("seat_air_vent_open_web.jpg")
+    air_vent_closed_photo = image_data_uri("seat_air_vent_closed_web.jpg")
+    side_table_unlock_photo = image_data_uri("seat_side_table_unlock_web.jpg")
+    side_table_deployed_photo = image_data_uri("seat_side_table_deployed_web.jpg")
+    legrest_operation_photo = image_data_uri("seat_legrest_operation_web.jpg")
+    armrest_lever_position_photo = image_data_uri("seat_armrest_lever_position_web.jpg")
+    armrest_lever_operation_photo = image_data_uri("seat_armrest_lever_operation_web.jpg")
+    footrest_photo = image_data_uri("seat_footrest_web.jpg")
+    amenity_blanket_photo = image_data_uri("amenity_blanket_web.jpg")
+    amenity_set_photo = image_data_uri("amenity_set_web.jpg")
     
     # 🎯 画面外枠（Streamlit標準のヘッダー・フッター等）を消去するCSS
     st.markdown("""
@@ -991,25 +1012,33 @@ def main():
                 .seat-guide-intro { background:#F8FAFC; border:1px solid #E2E8F0; border-radius:14px; padding:10px 12px; margin:0 0 8px; color:#475569; font-size:11.5px; line-height:1.5; font-weight:650; text-align:left; }
                 .seat-type-note { display:none; }
                 .seat-map-wrapper { position:relative; width:100%; max-width:358px; aspect-ratio:4/3; height:auto; border:1px solid rgba(0,91,172,.24); border-radius:20px; margin:0 auto; overflow:hidden; background:#001F4D; box-shadow:0 14px 30px rgba(0,31,77,.14),inset 0 1px 0 rgba(255,255,255,.4); isolation:isolate; }
+                .seat-map-wrapper.view-seat3 { aspect-ratio:3/4; max-width:390px; }
+                .seat-map-wrapper.view-seat4 { aspect-ratio:3/4; max-width:390px; }
                 .seat-map-wrapper::before { content:''; position:absolute; inset:0; z-index:4; background:linear-gradient(180deg,rgba(0,12,36,.04) 0%,rgba(0,12,36,.02) 48%,rgba(0,21,55,.20) 100%); pointer-events:none; }
                 .seat-photo-main { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; opacity:0; transform:scale(1.01); filter:saturate(1) contrast(1.02) brightness(1); transition:opacity .25s ease,transform .35s ease; z-index:1; }
+                .view-seat3 .seat-photo-seat3 { object-fit:contain; object-position:center center; }
                 .view-seat3 .seat-photo-seat3 { opacity:1; transform:scale(1); }
-                .view-seat4 .seat-photo-seat4 { opacity:1; transform:scale(1); }
+                .view-seat4 .seat-photo-seat4 { object-fit:contain; object-position:center center; opacity:1; transform:scale(1); }
                 .seat-photo-chip { position:absolute; left:12px; top:12px; z-index:15; display:inline-flex; align-items:center; gap:5px; max-width:calc(100% - 24px); background:rgba(0,31,77,.82); color:#FFFFFF; border:1px solid rgba(255,255,255,.28); border-radius:999px; padding:7px 11px; font-size:11px; font-weight:900; letter-spacing:.02em; box-shadow:0 8px 18px rgba(0,16,40,.24); backdrop-filter:blur(8px); }
+                .seat-map-wrapper.view-seat4 .seat-photo-chip { top:auto; bottom:12px; }
                 .seat-photo-helper { position:absolute; left:12px; right:12px; bottom:12px; z-index:15; display:flex; align-items:center; gap:8px; background:rgba(255,255,255,.94); color:#17324F; border:1px solid rgba(0,91,172,.18); border-radius:14px; padding:9px 11px; font-size:11.5px; line-height:1.45; font-weight:850; box-shadow:0 10px 24px rgba(0,24,62,.2); backdrop-filter:blur(8px); }
                 .seat-photo-helper i { color:#005BAC; font-size:16px; flex-shrink:0; }
                 .seat-map-wrapper.has-selection .seat-photo-helper { opacity:0; transform:translateY(6px); pointer-events:none; transition:opacity .18s ease,transform .18s ease; }
-                .hotspot-btn { position:absolute; width:33px; min-width:33px; height:33px; box-sizing:border-box; border:2px solid rgba(255,255,255,.96); background:radial-gradient(circle at 32% 24%,#66CCFF 0%,#0875D1 44%,#003E78 100%); color:#FFFFFF; border-radius:50%; cursor:pointer; z-index:30; display:flex; align-items:center; justify-content:center; padding:0; font-size:14px; font-weight:900; line-height:1; box-shadow:0 8px 18px rgba(0,48,106,.32),0 0 0 4px rgba(93,182,255,.13),inset 0 1px 0 rgba(255,255,255,.55); transition:top .32s cubic-bezier(.25,.8,.25,1),left .32s cubic-bezier(.25,.8,.25,1),transform .18s ease,background .18s ease,box-shadow .18s ease,border-color .18s ease; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
-                .hotspot-btn::before { content:''; position:absolute; inset:-6px; border:1.5px solid rgba(93,182,255,.42); background:rgba(93,182,255,.07); border-radius:50%; animation:seatPinPulse 2.4s infinite; pointer-events:none; }
-                .hotspot-btn::after { content:''; position:absolute; inset:3px; border-radius:50%; border:1px solid rgba(255,255,255,.48); box-shadow:inset 0 6px 9px rgba(255,255,255,.17),inset 0 -7px 12px rgba(0,22,49,.22); pointer-events:none; }
-                .hotspot-btn:hover { transform:translateY(-1px) scale(1.06); box-shadow:0 12px 24px rgba(0,48,106,.36),0 0 0 6px rgba(93,182,255,.18),0 0 18px rgba(93,182,255,.34),inset 0 1px 0 rgba(255,255,255,.62); }
+                .hotspot-btn { position:absolute; width:44px; min-width:44px; height:44px; box-sizing:border-box; border:none; background:transparent; color:#FFFFFF; border-radius:50%; cursor:pointer; z-index:30; display:flex; align-items:center; justify-content:center; padding:0; font-size:13px; font-weight:900; line-height:1; transition:top .32s cubic-bezier(.25,.8,.25,1),left .32s cubic-bezier(.25,.8,.25,1),transform .18s ease; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+                .hotspot-btn::before { content:''; position:absolute; left:50%; top:50%; width:25px; height:25px; border:1.3px solid rgba(93,182,255,.32); background:rgba(93,182,255,.04); border-radius:50%; transform:translate(-50%,-50%) scale(.82); animation:seatPinPulse 2.4s infinite; pointer-events:none; z-index:0; }
+                .hotspot-btn::after { content:''; position:absolute; left:50%; top:50%; width:20px; height:20px; border-radius:50%; border:1.3px solid rgba(255,255,255,.96); background:radial-gradient(circle at 32% 24%,#6ED0FF 0%,#1681D8 46%,#004A86 100%); box-shadow:0 5px 10px rgba(0,48,106,.25),0 0 0 2px rgba(93,182,255,.09),inset 0 1px 0 rgba(255,255,255,.56); transform:translate(-50%,-50%); pointer-events:none; z-index:1; }
+                .hotspot-btn:hover { transform:translateY(-1px) scale(1.03); }
                 .hotspot-btn:active { transform:scale(.94); }
-                .hotspot-btn i { position:relative; z-index:1; font-size:15px; color:#FFFFFF; filter:drop-shadow(0 1px 2px rgba(0,22,49,.42)); }
-                .hotspot-btn.active { background:radial-gradient(circle at 32% 24%,#FFFFFF 0%,#E8F6FF 48%,#BEE6FF 100%) !important; color:#005BAC !important; border-color:#B89446 !important; transform:translateY(-1px) scale(1.08); box-shadow:0 12px 25px rgba(0,49,109,.3),0 0 0 6px rgba(184,148,70,.16),0 0 22px rgba(184,148,70,.34),inset 0 1px 0 rgba(255,255,255,.8); }
-                .hotspot-btn.active i { color:#005BAC; }
-                @keyframes seatPinPulse { 0%,58%{transform:scale(.82);opacity:.62} 100%{transform:scale(1.38);opacity:0} }
+                .hotspot-btn i { position:relative; z-index:2; font-size:10.5px; color:#FFFFFF; filter:drop-shadow(0 1px 2px rgba(0,22,49,.42)); pointer-events:none; }
+                .hotspot-btn.active { background:transparent !important; border-color:transparent !important; box-shadow:none !important; transform:translateY(-1px) scale(1.08); }
+                .hotspot-btn.active::before { width:32px; height:32px; border:2px solid rgba(184,148,70,.72); background:rgba(184,148,70,.1); animation:none; transform:translate(-50%,-50%) scale(1); box-shadow:0 0 0 3px rgba(184,148,70,.12); }
+                .hotspot-btn.active::after { width:25px; height:25px; background:radial-gradient(circle at 32% 24%,#1A88D8 0%,#005BAC 52%,#003B72 100%); border:2px solid #F2C95B; box-shadow:0 9px 18px rgba(0,49,109,.34),0 0 0 4px rgba(184,148,70,.16),0 0 20px rgba(184,148,70,.34),inset 0 1px 0 rgba(255,255,255,.55); }
+                .hotspot-btn.active i { color:#FFFFFF; filter:drop-shadow(0 1px 2px rgba(0,22,49,.38)); }
+                @keyframes seatPinPulse { 0%,58%{transform:translate(-50%,-50%) scale(.82);opacity:.58} 100%{transform:translate(-50%,-50%) scale(1.45);opacity:0} }
                 .seat-map-wrapper:not(.has-selection) .hotspot-btn { animation:seatPinGlow 2.8s ease-in-out infinite; }
                 @keyframes seatPinGlow { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.16)} }
+                .seat-map-wrapper.view-seat3 .hotspot-btn { margin-left:-22px; margin-top:-22px; }
+                .seat-map-wrapper.view-seat4 .hotspot-btn { margin-left:-22px; margin-top:-22px; }
                 .interactive-tooltip { display:none; position:absolute; width:218px; max-width:calc(100% - 20px); min-height:70px; box-sizing:border-box; background:linear-gradient(180deg,#FFFFFF 0%,#F7FBFF 100%); color:#1E293B; border-radius:16px; padding:12px 13px 11px; box-shadow:0 16px 34px rgba(0,25,64,.22),0 0 0 1px rgba(255,255,255,.78); z-index:45; border:1px solid rgba(0,91,172,.22); opacity:0; transform:translateY(6px); transition:opacity .18s ease,transform .18s ease; pointer-events:auto; }
                 .interactive-tooltip::before { content:''; position:absolute; top:0; left:14px; right:14px; height:3px; border-radius:0 0 999px 999px; background:linear-gradient(90deg,#005BAC,#5DB6FF,#B89446); }
                 .interactive-tooltip.show { display:block; opacity:1; transform:translateY(0); }
@@ -1018,6 +1047,14 @@ def main():
                 .tooltip-detail-btn { display:none; align-items:center; justify-content:center; gap:4px; min-height:32px; margin-top:9px; padding:7px 10px; border:none; border-radius:999px; background:#005BAC; color:#FFFFFF; font-size:11.5px; font-weight:900; cursor:pointer; width:100%; box-shadow:0 6px 12px rgba(0,91,172,.16); }
                 .tooltip-leader-line { display:none; position:absolute; height:2px; width:0; background:repeating-linear-gradient(90deg,#005BAC 0 5px,transparent 5px 9px); transform-origin:0 50%; z-index:40; pointer-events:none; filter:drop-shadow(0 0 3px rgba(0,91,172,.44)); }
                 .tooltip-leader-line.show { display:block; }
+                .seat-hotspot-info { display:none; width:100%; max-width:358px; margin:10px auto 0; box-sizing:border-box; text-align:left; background:linear-gradient(180deg,#FFFFFF 0%,#FBFDFF 100%); border:1px solid #D8E3F0; border-radius:16px; padding:13px 14px 14px; box-shadow:0 6px 16px rgba(0,91,172,.055); }
+                .seat-hotspot-info.show { display:block; }
+                .seat-hotspot-info.ready { border-color:#C5DAF0; box-shadow:0 8px 18px rgba(0,91,172,.07); }
+                .seat-hotspot-info-kicker { display:flex; align-items:center; gap:6px; margin:0 0 7px; color:#64748B; font-size:10.8px; line-height:1.35; font-weight:850; }
+                .seat-hotspot-info-kicker i { color:#005BAC; font-size:15px; }
+                .seat-hotspot-info-title { margin:0 0 6px; color:#003B72; font-size:14px; line-height:1.42; font-weight:900; overflow-wrap:anywhere; }
+                .seat-hotspot-info-desc { margin:0; color:#334155; font-size:12.2px; line-height:1.62; font-weight:650; overflow-wrap:anywhere; }
+                .seat-hotspot-info-extra { display:none; margin-top:10px; padding-top:10px; border-top:1px solid #E4EEF8; color:#475569; font-size:11.8px; line-height:1.55; font-weight:650; }
                 .seat-feature-detail { display:none; margin:12px auto 0; max-width:340px; background:linear-gradient(180deg,#FFFFFF,#FBFDFF); border:1px solid #D8E3F0; border-radius:16px; padding:14px 15px; box-sizing:border-box; text-align:left; box-shadow:0 5px 15px rgba(0,91,172,.045); }
                 .seat-feature-detail.show { display:block; }
                 .seat-feature-detail-title { display:flex; align-items:center; gap:8px; font-size:14px; font-weight:900; color:#005BAC; margin-bottom:8px; }
@@ -1025,15 +1062,59 @@ def main():
                 .seat-feature-detail-body strong { color:#1E293B; font-weight:900; }
                 .seat-feature-detail-body .detail-mini-title { display:block; color:#1E293B; font-weight:900; margin:8px 0 2px; }
                 .seat-detail-photo { display:block; width:100%; height:176px; object-fit:contain; background:#F8FAFC; border-radius:12px; margin:0 0 10px; border:1px solid #D8E3F0; }
+                .seat-detail-photo-cover { height:210px; object-fit:cover; object-position:center 72%; }
+                .seat-detail-photo-tall { height:220px; }
                 .seat-detail-list { display:flex; flex-direction:column; gap:7px; }
                 .seat-detail-row { background:#F8FAFC; border:1px solid #E2E8F0; border-radius:10px; padding:8px 10px; }
                 .seat-detail-row strong { display:block; color:#1E293B; font-size:12px; line-height:1.35; margin-bottom:2px; font-weight:900; }
                 .seat-detail-row span { display:block; color:#475569; font-size:11.5px; line-height:1.45; font-weight:600; }
+                .seat-detail-guide { display:flex; flex-direction:column; gap:8px; }
+                .seat-detail-guide-head { display:flex; align-items:center; gap:7px; color:#003B72; font-size:12px; font-weight:900; margin:1px 0 2px; }
+                .seat-detail-guide-head i { width:24px; height:24px; border-radius:9px; display:inline-flex; align-items:center; justify-content:center; color:#005BAC; background:#EAF4FF; font-size:14px; flex-shrink:0; }
+                .seat-detail-guide-text { margin:0; color:#334155; background:linear-gradient(180deg,#FFFFFF 0%,#F8FBFF 100%); border:1px solid #E1ECF8; border-radius:12px; padding:10px 11px; font-size:12.2px; line-height:1.58; font-weight:650; }
+                .seat-equipment-block { background:#FFFFFF; border:1px solid #E1ECF8; border-radius:12px; padding:10px; box-shadow:0 3px 10px rgba(0,91,172,.035); }
+                .seat-equipment-title { display:flex; align-items:center; gap:7px; color:#003B72; font-size:12.4px; line-height:1.35; font-weight:900; margin:0 0 7px; }
+                .seat-equipment-title i { width:24px; height:24px; border-radius:9px; display:inline-flex; align-items:center; justify-content:center; color:#005BAC; background:#EAF4FF; font-size:14px; flex-shrink:0; }
+                .seat-equipment-text { margin:0; color:#475569; font-size:11.8px; line-height:1.55; font-weight:650; }
+                .seat-equipment-photo-card { display:flex; flex-direction:column; gap:7px; }
+                .seat-equipment-photo { width:100%; height:144px; object-fit:cover; object-position:center; border-radius:10px; border:1px solid #D8E3F0; background:#F8FAFC; }
+                .seat-equipment-photo-card span { color:#475569; font-size:11.6px; line-height:1.5; font-weight:650; }
+                .seat-equipment-stack { display:flex; flex-direction:column; gap:9px; }
+                .seat-equipment-step-card { display:flex; flex-direction:column; gap:7px; background:#F8FBFF; border:1px solid #E1ECF8; border-radius:12px; padding:8px; box-shadow:0 3px 10px rgba(0,91,172,.035); }
+                .seat-equipment-step-card strong { display:block; color:#0F2942; font-size:12.3px; line-height:1.35; font-weight:900; }
+                .seat-equipment-step-card span { display:block; color:#475569; font-size:11.6px; line-height:1.5; font-weight:650; }
+                .seat-equipment-step-photo { width:100%; height:156px; object-fit:cover; object-position:center; border-radius:10px; border:1px solid #D8E3F0; background:#F8FAFC; }
+                .seat-equipment-photo-seat { object-position:center 72%; }
+                .seat-equipment-photo-contain { height:220px; object-fit:contain; background:#F8FAFC; }
+                .seat-equipment-link { width:100%; min-height:42px; border:1px solid #BFD4EA; border-radius:12px; background:#FFFFFF; color:#005BAC; font-size:12.4px; line-height:1.35; font-weight:900; display:flex; align-items:center; justify-content:center; gap:6px; padding:10px 12px; margin-top:9px; cursor:pointer; box-shadow:0 4px 10px rgba(0,91,172,.055); }
+                .seat-equipment-link:active { transform:scale(.98); }
+                .seat-equipment-accordion { background:#FFFFFF; border:1px solid #E1ECF8; border-radius:12px; overflow:hidden; box-shadow:0 3px 10px rgba(0,91,172,.035); }
+                .seat-equipment-accordion + .seat-equipment-accordion { margin-top:8px; }
+                .seat-equipment-accordion summary { list-style:none; display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px 11px; color:#003B72; font-size:12.4px; line-height:1.35; font-weight:900; cursor:pointer; }
+                .seat-equipment-accordion summary::-webkit-details-marker { display:none; }
+                .seat-equipment-accordion summary span { display:flex; align-items:center; gap:7px; }
+                .seat-equipment-accordion summary span i { width:24px; height:24px; border-radius:9px; display:inline-flex; align-items:center; justify-content:center; color:#005BAC; background:#EAF4FF; font-size:14px; flex-shrink:0; }
+                .seat-equipment-accordion summary > i { color:#94A3B8; font-size:14px; transition:transform .18s ease; }
+                .seat-equipment-accordion[open] summary > i { transform:rotate(180deg); }
+                .seat-equipment-accordion-body { display:flex; flex-direction:column; gap:8px; padding:0 10px 10px; }
+                .seat-detail-caution strong, .seat-equipment-tip strong { display:block; margin:0 0 5px; font-size:11.8px; line-height:1.35; font-weight:900; }
+                .seat-detail-caution ul, .seat-equipment-tip ul { margin:0; padding-left:1.15em; }
+                .seat-detail-caution li, .seat-equipment-tip li { margin:3px 0; }
+                .seat-equipment-tip { margin-top:8px; padding:8px 10px; border-radius:10px; background:#F8FBFF; border:1px solid #D8E3F0; color:#334155; font-size:11.5px; line-height:1.48; font-weight:700; }
+                .seat-detail-step { display:grid; grid-template-columns:28px 1fr; gap:9px; align-items:flex-start; background:linear-gradient(180deg,#FFFFFF 0%,#F8FBFF 100%); border:1px solid #E1ECF8; border-radius:12px; padding:9px 10px; box-shadow:0 3px 10px rgba(0,91,172,.035); }
+                .seat-detail-step-no { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#005BAC; color:#FFFFFF; font-size:12px; font-weight:900; box-shadow:0 4px 10px rgba(0,91,172,.15); }
+                .seat-detail-step strong { display:block; color:#0F2942; font-size:12.4px; line-height:1.35; margin:0 0 2px; font-weight:900; }
+                .seat-detail-step span { display:block; color:#475569; font-size:11.7px; line-height:1.48; font-weight:650; }
+                .seat-air-card-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+                .seat-air-card { display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E1ECF8; border-radius:12px; padding:8px; box-shadow:0 3px 10px rgba(0,91,172,.035); }
+                .seat-air-photo { width:100%; height:104px; object-fit:cover; object-position:center; border-radius:10px; border:1px solid #D8E3F0; background:#F8FAFC; }
+                .seat-air-card strong { display:block; color:#0F2942; font-size:12.3px; line-height:1.35; margin:0 0 3px; font-weight:900; }
+                .seat-air-card span { display:block; color:#475569; font-size:11.6px; line-height:1.48; font-weight:650; }
                 .seat-detail-caution { margin-top:8px; padding:8px 10px; border-radius:10px; background:#FFF7ED; border:1px solid #FED7AA; color:#9A3412; font-size:11.5px; line-height:1.45; font-weight:700; }
                 .seat-photo-placeholder-card { display:flex; align-items:center; gap:9px; min-height:58px; background:#F8FAFC; border:1px dashed #BFD4EA; border-radius:12px; padding:10px 12px; margin:10px 0 2px; color:#64748B; font-size:11.5px; line-height:1.45; font-weight:800; }
                 .seat-photo-placeholder-card i { color:#005BAC; font-size:17px; flex-shrink:0; }
-                @media (max-width:380px){ .hotspot-btn{width:32px;min-width:32px;height:32px}.hotspot-btn i{font-size:14px}.interactive-tooltip{width:210px}.seat-photo-helper{font-size:11px} }
-                @media (max-width:355px){ .hotspot-btn{width:30px;min-width:30px;height:30px}.hotspot-btn i{display:block;font-size:13px}.interactive-tooltip{width:202px;padding:12px 12px 11px} }
+                @media (max-width:380px){ .hotspot-btn::before{width:24px;height:24px}.hotspot-btn::after{width:19px;height:19px}.hotspot-btn.active::before{width:31px;height:31px}.hotspot-btn.active::after{width:24px;height:24px}.hotspot-btn i{font-size:10px}.interactive-tooltip{width:210px}.seat-hotspot-info{padding:12px 13px 13px}.seat-air-photo{height:96px} }
+                @media (max-width:355px){ .hotspot-btn::before{width:23px;height:23px}.hotspot-btn::after{width:18px;height:18px}.hotspot-btn.active::before{width:30px;height:30px}.hotspot-btn.active::after{width:23px;height:23px}.hotspot-btn i{display:block;font-size:9.5px}.interactive-tooltip{width:202px;padding:12px 12px 11px}.seat-hotspot-info-title{font-size:13.5px}.seat-hotspot-info-desc{font-size:11.8px}.seat-air-card{padding:7px}.seat-air-photo{height:88px}.seat-air-card strong{font-size:11.8px}.seat-air-card span{font-size:11.1px}.seat-equipment-photo{height:128px}.seat-equipment-step-photo{height:132px}.seat-equipment-photo-contain{height:190px} }
 
 
                 /* ── 🟠 車内のご利用案内：整理済みアコーディオンUI ── */
@@ -2120,16 +2201,20 @@ def main():
                             <button class="seat-toggle-btn active" id="js-btn-seat3"><span class="seat-toggle-main">3列独立シート</span><span class="seat-toggle-sub">トイレ付</span></button>
                             <button class="seat-toggle-btn" id="js-btn-seat4"><span class="seat-toggle-main">4列シート</span><span class="seat-toggle-sub">スタンダード</span></button>
                         </div>
-                        <p class="seat-guide-intro">シートタイプを選択し、写真上の設備アイコンをタップして位置を確認できます。</p>
+                        <p class="seat-guide-intro">シートタイプを選択し、写真上の設備アイコンをタップすると、設備の位置や使い方をご確認いただけます。</p>
                         <p class="seat-type-note" id="js-seat-type-note"></p>
                         
                         <div class="seat-map-wrapper view-seat3" id="seat-canvas-container">
                             <img class="seat-photo-main seat-photo-seat3" src="__SEAT3_PHOTO__" alt="3列独立シート全景">
                             <img class="seat-photo-main seat-photo-seat4" src="__SEAT4_PHOTO__" alt="4列シート全景">
                             <div class="seat-photo-chip" id="js-seat-photo-label">3列独立シート 設備ガイド</div>
-                            <div class="seat-photo-helper"><i class="ph-bold ph-hand-tap"></i><span>設備アイコンをタップしてください。</span></div>
 
-                            <div class="hotspot-btn" id="pin-overhead" data-key="overhead" aria-label="天井設備"><i class="ph-bold ph-lightbulb"></i></div>
+                            <div class="hotspot-btn" id="pin-luggage" data-key="luggage" aria-label="荷物棚"><i class="ph-bold ph-bag"></i></div>
+                            <div class="hotspot-btn" id="pin-overhead" data-key="overhead" aria-label="読書灯・空調吹出口"><i class="ph-bold ph-lightbulb"></i></div>
+                            <div class="hotspot-btn" id="pin-table-legrest" data-key="tableLegrest" aria-label="サイドテーブル・レッグレスト操作部"><i class="ph-bold ph-sliders-horizontal"></i></div>
+                            <div class="hotspot-btn" id="pin-legrest" data-key="legrest" aria-label="レッグレスト"><i class="ph-bold ph-armchair"></i></div>
+                            <div class="hotspot-btn" id="pin-armrest" data-key="armrest" aria-label="アームレストレバー"><i class="ph-bold ph-hand"></i></div>
+                            <div class="hotspot-btn" id="pin-usb" data-key="usb" aria-label="USBポート"><i class="ph-bold ph-usb"></i></div>
                             <div class="hotspot-btn" id="pin-privacy" data-key="privacy" aria-label="プライバシー設備"><i class="ph-bold ph-columns"></i></div>
                             <div class="hotspot-btn" id="pin-recline" data-key="recline" aria-label="リクライニング"><i class="ph-bold ph-arrow-counter-clockwise"></i></div>
                             <div class="hotspot-btn" id="pin-power" data-key="power" aria-label="充電設備"><i class="ph-bold ph-plug-charging"></i></div>
@@ -2141,6 +2226,11 @@ def main():
                                 <p class="tooltip-desc" id="js-tt-desc">説明文</p>
                                 <button type="button" class="tooltip-detail-btn" id="js-seat-detail-more">詳しく見る</button>
                             </div>
+                        </div>
+                        <div class="seat-hotspot-info" id="js-seat-hotspot-info" aria-live="polite">
+                            <div class="seat-hotspot-info-title" id="js-seat-info-title"></div>
+                            <p class="seat-hotspot-info-desc" id="js-seat-info-desc"></p>
+                            <div class="seat-hotspot-info-extra" id="js-seat-info-extra"></div>
                         </div>
                         <div class="seat-feature-detail" id="js-seat-feature-detail" aria-hidden="true">
                             <div class="seat-feature-detail-title" id="js-feature-detail-title">天井設備ユニット</div>
@@ -2516,22 +2606,43 @@ def main():
                     const featureDetailTitle = document.getElementById('js-feature-detail-title');
                     const featureDetailBody = document.getElementById('js-feature-detail-body');
                     const seatTypeNote = document.getElementById('js-seat-type-note');
+                    const seatInfoPanel = document.getElementById('js-seat-hotspot-info');
+                    const seatInfoTitle = document.getElementById('js-seat-info-title');
+                    const seatInfoDesc = document.getElementById('js-seat-info-desc');
+                    const seatInfoExtra = document.getElementById('js-seat-info-extra');
+                    const seat4AirPin = document.getElementById('pin-privacy');
+                    if (seat4AirPin) {
+                        seat4AirPin.dataset.key = 'seat4Air';
+                        seat4AirPin.setAttribute('aria-label', '個別空調');
+                        seat4AirPin.innerHTML = '<i class="ph-bold ph-wind"></i>';
+                    }
+                    let currentSeatType = 'seat3';
                     let currentSeatFeatureKey = null;
 
                     const pinConfig = {
                         seat3: {
-                            "pin-overhead":    { top: "15%", left: "77%", display: "flex" },
-                            "pin-privacy":     { top: "31%", left: "48%", display: "flex" },
-                            "pin-recline":     { top: "66%", left: "65%", display: "flex" },
-                            "pin-power":       { top: "78%", left: "70%", display: "flex" },
-                            "pin-footcomfort": { top: "80%", left: "48%", display: "flex" }
+                            "pin-luggage":       { top: "12.2%", left: "30.5%", display: "flex" },
+                            "pin-overhead":      { top: "12.7%", left: "59.0%", display: "flex" },
+                            "pin-table-legrest": { top: "57.9%", left: "71.8%", display: "flex" },
+                            "pin-power":         { top: "67.4%", left: "72.6%", display: "flex" },
+                            "pin-legrest":       { top: "90.3%", left: "78.2%", display: "flex" },
+                            "pin-armrest":       { top: "71.4%", left: "46.7%", display: "flex" },
+                            "pin-recline":       { top: "79.3%", left: "37.6%", display: "flex" },
+                            "pin-usb":           { top: "85.7%", left: "48.3%", display: "flex" },
+                            "pin-footcomfort":   { top: "92.4%", left: "92.1%", display: "flex" },
+                            "pin-privacy":       { top: "0%", left: "0%", display: "none" }
                         },
                         seat4: {
-                            "pin-overhead":    { top: "12%", left: "77%", display: "flex" },
-                            "pin-privacy":     { top: "40%", left: "13%", display: "flex" },
-                            "pin-recline":     { top: "64%", left: "72%", display: "flex" },
-                            "pin-power":       { top: "74%", left: "63%", display: "flex" },
-                            "pin-footcomfort": { top: "79%", left: "44%", display: "flex" }
+                            "pin-luggage":       { top: "5.8%", left: "34.0%", display: "flex" },
+                            "pin-overhead":      { top: "3.6%", left: "16.4%", display: "flex" },
+                            "pin-armrest":       { top: "41.5%", left: "13.4%", display: "flex" },
+                            "pin-recline":       { top: "80.4%", left: "38.2%", display: "flex" },
+                            "pin-power":         { top: "87.6%", left: "82.0%", display: "flex" },
+                            "pin-privacy":       { top: "2.6%", left: "4.8%", display: "flex" },
+                            "pin-table-legrest": { top: "0%", left: "0%", display: "none" },
+                            "pin-legrest":       { top: "0%", left: "0%", display: "none" },
+                            "pin-usb":           { top: "0%", left: "0%", display: "none" },
+                            "pin-footcomfort":   { top: "0%", left: "0%", display: "none" }
                         }
                     };
 
@@ -2609,34 +2720,192 @@ def main():
                     };
 
                     const seatFeatureData = {
+                        luggage: {
+                            title: "荷物棚",
+                            desc: "小さな手荷物を収納できます。重い荷物や貴重品は置かず、落下しないようご注意ください。"
+                        },
                         overhead: {
-                            title: "💡 天井設備",
-                            desc: "読書灯・個別空調・荷物棚をまとめて確認できます。",
-                            detail: '<img class="seat-detail-photo" src="__OVERHEAD_PHOTO__" alt="読書灯・個別空調・荷物棚の写真"><div class="seat-detail-list"><div class="seat-detail-row"><strong>読書灯</strong><span>手元を照らす個別ライトです。消灯後は必要な範囲でご利用ください。</span></div><div class="seat-detail-row"><strong>個別空調</strong><span>吹出口の向きを調整できます。形状は車両により異なります。</span></div><div class="seat-detail-row"><strong>荷物棚</strong><span>小さなお荷物用です。重い荷物・貴重品は置かないでください。</span></div></div>'
+                            title: "読書灯・個別空調",
+                            desc: "読書灯と個別空調の位置です。",
+                            detail: '<img class="seat-detail-photo" src="__OVERHEAD_PHOTO__" alt="読書灯・個別空調の全体写真"><div class="seat-detail-guide"><div class="seat-equipment-block"><div class="seat-equipment-title"><i class="ph-bold ph-lightbulb"></i><span>読書灯</span></div><p class="seat-equipment-text">オレンジ色のボタンを押すと点灯します。消灯後は、周囲のお客様へのご配慮をお願いいたします。</p></div><div class="seat-equipment-block"><div class="seat-equipment-title"><i class="ph-bold ph-wind"></i><span>個別空調</span></div><div class="seat-air-card-list"><div class="seat-air-card"><img class="seat-air-photo" src="__AIR_VENT_OPEN_PHOTO__" alt="個別空調の吹出口が開いている写真"><div><strong>吹出口を開いた状態</strong><span>吹出口の向きを動かすことで、風向きを調整できます。</span></div></div><div class="seat-air-card"><img class="seat-air-photo" src="__AIR_VENT_CLOSED_PHOTO__" alt="個別空調の吹出口を閉じている写真"><div><strong>吹出口を閉じた状態</strong><span>風を止めたい場合は、吹出口を閉じる位置まで回してください。</span></div></div></div></div></div>'
+                        },
+                        tableLegrest: {
+                            title: "サイドテーブル・レッグレスト操作部",
+                            desc: "サイドテーブルとレッグレスト操作部の位置です。",
+                            detail: '<div class="seat-detail-guide"><div class="seat-equipment-block"><div class="seat-equipment-title"><i class="ph-bold ph-tray"></i><span>サイドテーブル</span></div><div class="seat-equipment-stack"><div class="seat-equipment-step-card"><img class="seat-equipment-step-photo" src="__SIDE_TABLE_DEPLOYED_PHOTO__" alt="サイドテーブルがアームレスト内に収納されている状態の写真"><strong>収納状態</strong><span>サイドテーブルはアームレスト内に収納されています。</span></div><div class="seat-equipment-step-card"><img class="seat-equipment-step-photo" src="__SIDE_TABLE_UNLOCK_PHOTO__" alt="アームレスト上部を開けてサイドテーブルを取り出す写真"><strong>取り出し方</strong><span>アームレスト上部を開け、中からサイドテーブルを手動で引き出してください。</span></div></div></div><div class="seat-equipment-block"><div class="seat-equipment-title"><i class="ph-bold ph-armchair"></i><span>レッグレスト操作部</span></div><div class="seat-equipment-photo-card"><img class="seat-equipment-photo seat-equipment-photo-contain" src="__LEGREST_OPERATION_PHOTO__" alt="アームレスト先端のボタンとレッグレストが分かる写真"><span>アームレスト先端のボタンを押すと、レッグレストが動きます。</span></div></div></div>'
                         },
                         privacy: {
-                            title: "▌ カーテン・仕切り",
+                            title: "カーテン・仕切り",
                             desc: "外光や隣席からの視線をやわらげます。乗降時は開けてください。"
                         },
                         recline: {
-                            title: "↩ リクライニングレバー",
-                            desc: "座席側面のレバーで背もたれを調整します。ゆっくり操作してください。"
+                            title: "リクライニングレバー",
+                            desc: "レバーを引いたまま、背もたれへゆっくり体重をかけて倒します。",
+                            detail: '<div class="seat-detail-guide"><div class="seat-equipment-block"><div class="seat-equipment-title"><i class="ph-bold ph-map-pin"></i><span>レバーの位置</span></div><div class="seat-equipment-photo-card"><img class="seat-equipment-photo" src="__RECLINE_POSITION_PHOTO__" alt="リクライニングレバーの位置が分かる写真"><span>白い矢印が付いたレバーが、リクライニング操作部です。</span></div></div><div class="seat-equipment-block"><div class="seat-equipment-title"><i class="ph-bold ph-hand-tap"></i><span>操作方法</span></div><div class="seat-equipment-photo-card"><img class="seat-equipment-photo" src="__RECLINE_OPERATION_PHOTO__" alt="リクライニングレバーを引いている写真"><span>レバーを矢印の方向へ引いたまま、背もたれにゆっくり体重をかけます。お好みの位置でレバーを離すと、その位置で固定されます。</span></div></div></div>'
                         },
                         power: {
-                            title: "⚡ 充電設備",
-                            desc: "コンセントまたはUSBポートをご利用ください。設備は車両により異なります。"
+                            title: "コンセント",
+                            desc: "携帯電話などの充電に限りご利用いただけます。",
+                            detail: '<div class="seat-detail-guide"><div class="seat-equipment-block"><div class="seat-equipment-title"><i class="ph-bold ph-plug-charging"></i><span>コンセント</span></div><p class="seat-equipment-text">携帯電話などの充電に限りご利用いただけます。</p><div class="seat-detail-caution"><strong>ご利用時のお願い</strong><ul><li>パソコン・DVD機器・ゲーム機器などにはご使用いただけません。</li><li>瞬間的な停電や電圧低下が発生する場合がありますので、あらかじめご了承ください。</li></ul></div></div></div>'
+                        },
+                        legrest: {
+                            title: "レッグレスト",
+                            desc: "ふくらはぎを支え、長時間の移動をより快適にします。",
+                            detail: '<div class="seat-detail-guide"><div class="seat-equipment-block"><div class="seat-equipment-title"><i class="ph-bold ph-armchair"></i><span>レッグレスト</span></div><p class="seat-equipment-text">ふくらはぎを支えることで、足への負担やむくみを軽減し、長時間の移動をより快適にします。</p><button type="button" class="seat-equipment-link" data-seat-target="tableLegrest"><i class="ph-bold ph-caret-right"></i><span>レッグレストの操作方法</span></button></div></div>'
+                        },
+                        armrest: {
+                            title: "アームレストレバー",
+                            desc: "アームレスト先端のレバーを押しながら、アームレストを動かしてください。",
+                            detail: '<div class="seat-detail-guide"><div class="seat-equipment-block"><div class="seat-equipment-title"><i class="ph-bold ph-map-pin"></i><span>レバーの位置</span></div><div class="seat-equipment-photo-card"><img class="seat-equipment-photo seat-equipment-photo-contain" src="__ARMREST_LEVER_POSITION_PHOTO__" alt="アームレスト先端とレバーの位置が分かる写真"><span>アームレスト先端にあるレバーです。リクライニングレバーとは別の操作部です。</span></div></div><div class="seat-equipment-block"><div class="seat-equipment-title"><i class="ph-bold ph-hand-tap"></i><span>操作している様子</span></div><div class="seat-equipment-photo-card"><img class="seat-equipment-photo seat-equipment-photo-contain" src="__ARMREST_LEVER_OPERATION_PHOTO__" alt="アームレスト先端のレバーを押している写真"><span>アームレスト先端のレバーを押しながら、アームレストを動かしてください。</span></div></div></div>'
+                        },
+                        usb: {
+                            title: "USBポート",
+                            desc: "USB対応機器の充電にご利用いただけます。",
+                            detail: '<div class="seat-detail-guide"><div class="seat-equipment-block"><div class="seat-equipment-title"><i class="ph-bold ph-usb"></i><span>USBポート</span></div><p class="seat-equipment-text">USB対応機器の充電にご利用いただけます。充電ケーブルはお客様ご自身でご用意ください。</p></div></div>'
                         },
                         footcomfort: {
-                            title: "足元設備",
-                            desc: "レッグレスト・フットレストを足元でご利用いただけます。"
+                            title: "フットレスト",
+                            desc: "手動で倒して、足元を楽にできます。",
+                            detail: '<div class="seat-detail-guide"><div class="seat-equipment-block"><div class="seat-equipment-title"><i class="ph-bold ph-footprints"></i><span>フットレスト</span></div><div class="seat-equipment-photo-card"><img class="seat-equipment-photo seat-equipment-photo-contain" src="__FOOTREST_PHOTO__" alt="フットレストを手動で倒している写真"><span>フットレストは手動で倒してご利用ください。</span></div><div class="seat-equipment-tip"><strong>快適ポイント</strong><ul><li>靴を脱いだ状態、または靴下でご利用いただくと、より快適にお休みいただけます。</li><li>足を乗せることで、長時間の移動も快適にお過ごしいただけます。</li></ul></div></div></div>'
                         }
                     };
+
+                    const seat4FeatureData = {
+                        luggage: seatFeatureData.luggage,
+                        overhead: seatFeatureData.overhead,
+                        armrest: {
+                            title: "アームレスト",
+                            desc: "通路側席・窓側席とも共通のひじ掛けです。",
+                            detail: '<div class="seat-detail-guide"><div class="seat-equipment-block"><div class="seat-equipment-title"><i class="ph-bold ph-armchair"></i><span>アームレスト</span></div><div class="seat-equipment-photo-card"><img class="seat-equipment-photo seat-equipment-photo-contain" src="__SEAT4_PHOTO__" alt="4列シートのアームレスト位置が分かる写真"><span>座席横のアームレストです。通路側席・窓側席ともに、ひじ掛けとしてご利用いただけます。</span></div></div></div>'
+                        },
+                        recline: {
+                            title: "リクライニングレバー",
+                            desc: "通路側席と窓側席でレバー位置が異なります。",
+                            detail: '<div class="seat-detail-guide"><div class="seat-equipment-block"><div class="seat-equipment-title"><i class="ph-bold ph-armchair"></i><span>通路側席</span></div><p class="seat-equipment-text">アームレスト下部のレバーを引くことでリクライニングできます。</p><div class="seat-equipment-stack"><div class="seat-equipment-step-card"><img class="seat-equipment-step-photo" src="__SEAT4_RECLINE_AISLE_POSITION_PHOTO__" alt="4列シート通路側席のリクライニングレバー位置"><strong>レバーの位置</strong><span>通路側のアームレスト下部にあります。</span></div><div class="seat-equipment-step-card"><img class="seat-equipment-step-photo" src="__SEAT4_RECLINE_AISLE_OPERATION_PHOTO__" alt="4列シート通路側席のリクライニング操作写真"><strong>操作方法</strong><span>レバーを引いたまま、背もたれへゆっくり体重をかけてください。</span></div></div></div><div class="seat-equipment-block"><div class="seat-equipment-title"><i class="ph-bold ph-sidebar"></i><span>窓側席</span></div><p class="seat-equipment-text">座席の窓側にある短い縦型レバーを引くことでリクライニングできます。</p><div class="seat-equipment-stack"><div class="seat-equipment-step-card"><img class="seat-equipment-step-photo" src="__SEAT4_RECLINE_WINDOW_POSITION_PHOTO__" alt="4列シート窓側席のリクライニングレバー位置"><strong>レバーの位置</strong><span>窓側の壁寄りにある、短い縦型のレバーです。</span></div><div class="seat-equipment-step-card"><img class="seat-equipment-step-photo" src="__SEAT4_RECLINE_WINDOW_OPERATION_PHOTO__" alt="4列シート窓側席のリクライニング操作写真"><strong>操作方法</strong><span>レバーを引いたまま、背もたれへゆっくり体重をかけてください。</span></div></div></div></div>'
+                        },
+                        power: {
+                            title: "コンセント・USBポート",
+                            desc: "座席前方に設置されています。",
+                            detail: '<div class="seat-detail-guide"><div class="seat-equipment-block"><div class="seat-equipment-title"><i class="ph-bold ph-plug-charging"></i><span>コンセント</span></div><p class="seat-equipment-text">携帯電話などの充電に限りご利用いただけます。</p><div class="seat-detail-caution"><strong>ご利用時のお願い</strong><ul><li>パソコン・DVD機器・ゲーム機器などにはご使用いただけません。</li><li>瞬間的な停電や電圧低下が発生する場合がありますので、あらかじめご了承ください。</li></ul></div></div><div class="seat-equipment-block"><div class="seat-equipment-title"><i class="ph-bold ph-usb"></i><span>USBポート</span></div><p class="seat-equipment-text">USB対応機器の充電にご利用いただけます。充電ケーブルはお客様ご自身でご用意ください。</p></div></div>'
+                        }
+                    };
+
+                    seat4FeatureData.overhead = {
+                        title: "読書灯",
+                        desc: "読書灯の位置と使い方をご案内します。",
+                        detail: `<div class="seat-detail-guide">
+                            <div class="seat-equipment-block">
+                                <div class="seat-equipment-title"><i class="ph-bold ph-lightbulb"></i><span>読書灯</span></div>
+                                <p class="seat-equipment-text">オレンジ色のボタンを押すと点灯します。消灯後は、周囲のお客様へのご配慮をお願いいたします。</p>
+                            </div>
+                        </div>`
+                    };
+
+                    seat4FeatureData.seat4Air = {
+                        title: "個別空調",
+                        desc: "吹出口の向きや開閉で風量を調整できます。",
+                        detail: `<div class="seat-detail-guide">
+                            <div class="seat-equipment-block">
+                                <div class="seat-equipment-title"><i class="ph-bold ph-wind"></i><span>個別空調</span></div>
+                                <div class="seat-air-card-list">
+                                    <div class="seat-air-card">
+                                        <img class="seat-air-photo" src="__AIR_VENT_OPEN_PHOTO__" alt="個別空調の吹出口が開いている写真">
+                                        <div><strong>吹出口を開いた状態</strong><span>吹出口の向きを動かすことで、風向きを調整できます。</span></div>
+                                    </div>
+                                    <div class="seat-air-card">
+                                        <img class="seat-air-photo" src="__AIR_VENT_CLOSED_PHOTO__" alt="個別空調の吹出口を閉じている写真">
+                                        <div><strong>吹出口を閉じた状態</strong><span>風を止めたい場合は、吹出口を閉じる位置まで回してください。</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`
+                    };
+
+                    seat4FeatureData.armrest = {
+                        title: "アームレスト",
+                        desc: "通路側席・窓側席とも共通のひじ掛けです。",
+                        detail: `<div class="seat-detail-guide">
+                            <div class="seat-equipment-block">
+                                <div class="seat-equipment-title"><i class="ph-bold ph-armchair"></i><span>アームレスト</span></div>
+                                <p class="seat-equipment-text">座席横のひじ掛けです。通路側席・窓側席ともに、腕を休めるためにご利用いただけます。</p>
+                            </div>
+                        </div>`
+                    };
+
+                    seat4FeatureData.recline = {
+                        title: "リクライニングレバー",
+                        desc: "座席によってレバーの位置が異なります。",
+                        detail: `<div class="seat-detail-guide">
+                            <div class="seat-equipment-block">
+                                <div class="seat-equipment-title"><i class="ph-bold ph-info"></i><span>座席に合わせて確認</span></div>
+                                <p class="seat-equipment-text">座席によってリクライニングレバーの位置が異なります。ご利用の座席に合わせてご確認ください。</p>
+                            </div>
+                            <details class="seat-equipment-accordion">
+                                <summary><span><i class="ph-bold ph-armchair"></i>通路側席</span><i class="ph-bold ph-caret-down"></i></summary>
+                                <div class="seat-equipment-accordion-body">
+                                    <p class="seat-equipment-text">通路側席は、アームレスト下部のレバーを引くことでリクライニングできます。</p>
+                                    <div class="seat-equipment-stack">
+                                        <div class="seat-equipment-step-card">
+                                            <img class="seat-equipment-step-photo" src="__SEAT4_RECLINE_AISLE_POSITION_PHOTO__" alt="4列シート通路側席のリクライニングレバー位置">
+                                            <strong>レバーの位置</strong><span>通路側のアームレスト下部にあります。</span>
+                                        </div>
+                                        <div class="seat-equipment-step-card">
+                                            <img class="seat-equipment-step-photo" src="__SEAT4_RECLINE_AISLE_OPERATION_PHOTO__" alt="4列シート通路側席のリクライニング操作写真">
+                                            <strong>操作方法</strong><span>レバーを引いたまま、背もたれへゆっくり体重をかけてください。</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="seat-equipment-accordion">
+                                <summary><span><i class="ph-bold ph-sidebar"></i>窓側席</span><i class="ph-bold ph-caret-down"></i></summary>
+                                <div class="seat-equipment-accordion-body">
+                                    <p class="seat-equipment-text">窓側席は、座席窓側にある短い縦型のレバーを引くことでリクライニングできます。</p>
+                                    <div class="seat-equipment-stack">
+                                        <div class="seat-equipment-step-card">
+                                            <img class="seat-equipment-step-photo" src="__SEAT4_RECLINE_WINDOW_POSITION_PHOTO__" alt="4列シート窓側席のリクライニングレバー位置">
+                                            <strong>レバーの位置</strong><span>窓側の壁寄りにある、短い縦型のレバーです。</span>
+                                        </div>
+                                        <div class="seat-equipment-step-card">
+                                            <img class="seat-equipment-step-photo" src="__SEAT4_RECLINE_WINDOW_OPERATION_PHOTO__" alt="4列シート窓側席のリクライニング操作写真">
+                                            <strong>操作方法</strong><span>レバーを引いたまま、背もたれへゆっくり体重をかけてください。</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>`
+                    };
+
+                    seat4FeatureData.power = {
+                        title: "コンセント・USBポート",
+                        desc: "座席前方に設置されています。",
+                        detail: `<div class="seat-detail-guide">
+                            <img class="seat-detail-photo seat-detail-photo-tall" src="__SEAT4_POWER_USB_PHOTO__" alt="4列シートのコンセント・USBポート位置">
+                            <p class="seat-detail-guide-text">コンセント・USBポートは座席前方に設置されています。</p>
+                            <div class="seat-equipment-block">
+                                <div class="seat-equipment-title"><i class="ph-bold ph-plug-charging"></i><span>コンセント</span></div>
+                                <p class="seat-equipment-text">携帯電話などの充電に限りご利用いただけます。</p>
+                                <div class="seat-detail-caution"><strong>ご利用時のお願い</strong><ul><li>パソコン・DVD機器・ゲーム機器などにはご使用いただけません。</li><li>瞬間的な停電や電圧低下が発生する場合がありますので、あらかじめご了承ください。</li></ul></div>
+                            </div>
+                            <div class="seat-equipment-block">
+                                <div class="seat-equipment-title"><i class="ph-bold ph-usb"></i><span>USBポート</span></div>
+                                <p class="seat-equipment-text">USB対応機器の充電にご利用いただけます。充電ケーブルはお客様ご自身でご用意ください。</p>
+                            </div>
+                        </div>`
+                    };
+
+                    function getSeatFeatureData(key) {
+                        if (currentSeatType === 'seat4' && seat4FeatureData[key]) {
+                            return seat4FeatureData[key];
+                        }
+                        return seatFeatureData[key];
+                    }
 
                     const illustSeat3 = document.getElementById('illustSeat3');
                     const illustSeat4 = document.getElementById('illustSeat4');
 
                     function applySeatLayout(type) {
                         if (!canvasContainer) return;
+                        currentSeatType = type;
                         const partition = document.getElementById('js-bus-privacy-partition');
                         const wallSide = document.getElementById('js-bus-wall-side');
                         
@@ -2672,11 +2941,55 @@ def main():
                         document.querySelectorAll('.hotspot-btn').forEach(p => p.classList.remove('active'));
                         currentSeatFeatureKey = null;
                         if (detailMoreBtn) detailMoreBtn.style.display = 'none';
+                        resetSeatInfoPanel(type);
                         if (featureDetailCard) {
                             featureDetailCard.classList.remove('show');
                             featureDetailCard.setAttribute('aria-hidden', 'true');
                         }
                         if (featureDetailBody) featureDetailBody.innerHTML = '';
+                    }
+
+                    function resetSeatInfoPanel(type) {
+                        if (!seatInfoPanel) return;
+                        if (type === 'seat3') {
+                            seatInfoPanel.classList.remove('show');
+                            seatInfoPanel.classList.remove('ready');
+                            if (seatInfoTitle) seatInfoTitle.innerText = "";
+                            if (seatInfoDesc) seatInfoDesc.innerText = "";
+                            if (seatInfoExtra) {
+                                seatInfoExtra.innerHTML = "";
+                                seatInfoExtra.style.display = "none";
+                            }
+                        } else {
+                            seatInfoPanel.classList.remove('show', 'ready');
+                        }
+                    }
+
+                    function updateSeatInfoPanel(data) {
+                        if (!seatInfoPanel || !data) return;
+                        seatInfoPanel.classList.add('show', 'ready');
+                        if (seatInfoTitle) seatInfoTitle.innerText = data.title;
+                        if (seatInfoDesc) seatInfoDesc.innerText = data.desc;
+                        if (seatInfoExtra) {
+                            const extraHtml = data.detail || data.extra || "";
+                            seatInfoExtra.innerHTML = extraHtml;
+                            seatInfoExtra.style.display = extraHtml ? "block" : "none";
+                        }
+                    }
+
+                    if (seatInfoPanel) {
+                        seatInfoPanel.addEventListener('click', function(e) {
+                            const targetButton = e.target.closest('[data-seat-target]');
+                            if (!targetButton) return;
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const targetKey = targetButton.getAttribute('data-seat-target');
+                            const targetPin = document.querySelector('.hotspot-btn[data-key="' + targetKey + '"]');
+                            if (targetPin) {
+                                targetPin.click();
+                                seatInfoPanel.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+                            }
+                        });
                     }
 
                     applySeatLayout('seat3');
@@ -2695,7 +3008,7 @@ def main():
                     if (detailMoreBtn) {
                         detailMoreBtn.addEventListener('click', function(e) {
                             e.stopPropagation();
-                            const data = seatFeatureData[currentSeatFeatureKey];
+                            const data = getSeatFeatureData(currentSeatFeatureKey);
                             if (!data || !data.detail || !featureDetailCard) return;
                             if (featureDetailTitle) featureDetailTitle.innerText = data.title;
                             if (featureDetailBody) featureDetailBody.innerHTML = data.detail;
@@ -2703,7 +3016,6 @@ def main():
                             featureDetailCard.setAttribute('aria-hidden', 'false');
                         });
                     }
-
                     document.querySelectorAll('.hotspot-btn').forEach(pin => {
                         pin.addEventListener('click', function(e) {
                             e.stopPropagation();
@@ -2712,7 +3024,7 @@ def main():
                             if (canvasContainer) canvasContainer.classList.add('has-selection');
 
                             const key = this.getAttribute('data-key');
-                            const data = seatFeatureData[key];
+                            const data = getSeatFeatureData(key);
 
                             if (!data || !dynamicTooltip || !dynamicLine || !canvasContainer) return;
 
@@ -2725,6 +3037,13 @@ def main():
                                 featureDetailCard.setAttribute('aria-hidden', 'true');
                             }
                             if (featureDetailBody) featureDetailBody.innerHTML = '';
+
+                            if (currentSeatType === 'seat3' || currentSeatType === 'seat4') {
+                                if (dynamicTooltip) dynamicTooltip.classList.remove('show');
+                                if (dynamicLine) dynamicLine.classList.remove('show');
+                                updateSeatInfoPanel(data);
+                                return;
+                            }
 
                             /* 実寸を取得するため、見えない状態で一度描画する */
                             dynamicTooltip.classList.remove('show');
@@ -2884,6 +3203,8 @@ def main():
                             if (dynamicLine) dynamicLine.classList.remove('show');
                             canvasContainer.classList.remove('has-selection');
                             document.querySelectorAll('.hotspot-btn').forEach(p => p.classList.remove('active'));
+                            currentSeatFeatureKey = null;
+                            resetSeatInfoPanel(currentSeatType);
                         });
                     }
 
@@ -3197,7 +3518,22 @@ def main():
         html
         .replace("__SEAT3_PHOTO__", seat3_photo)
         .replace("__SEAT4_PHOTO__", seat4_photo)
+        .replace("__SEAT4_RECLINE_AISLE_POSITION_PHOTO__", seat4_recline_aisle_position_photo)
+        .replace("__SEAT4_RECLINE_AISLE_OPERATION_PHOTO__", seat4_recline_aisle_operation_photo)
+        .replace("__SEAT4_RECLINE_WINDOW_POSITION_PHOTO__", seat4_recline_window_position_photo)
+        .replace("__SEAT4_RECLINE_WINDOW_OPERATION_PHOTO__", seat4_recline_window_operation_photo)
+        .replace("__SEAT4_POWER_USB_PHOTO__", seat4_power_usb_photo)
         .replace("__OVERHEAD_PHOTO__", overhead_photo)
+        .replace("__RECLINE_POSITION_PHOTO__", recline_position_photo)
+        .replace("__RECLINE_OPERATION_PHOTO__", recline_operation_photo)
+        .replace("__AIR_VENT_OPEN_PHOTO__", air_vent_open_photo)
+        .replace("__AIR_VENT_CLOSED_PHOTO__", air_vent_closed_photo)
+        .replace("__SIDE_TABLE_UNLOCK_PHOTO__", side_table_unlock_photo)
+        .replace("__SIDE_TABLE_DEPLOYED_PHOTO__", side_table_deployed_photo)
+        .replace("__LEGREST_OPERATION_PHOTO__", legrest_operation_photo)
+        .replace("__ARMREST_LEVER_POSITION_PHOTO__", armrest_lever_position_photo)
+        .replace("__ARMREST_LEVER_OPERATION_PHOTO__", armrest_lever_operation_photo)
+        .replace("__FOOTREST_PHOTO__", footrest_photo)
         .replace("__AMENITY_BLANKET_PHOTO__", amenity_blanket_photo)
         .replace("__AMENITY_SET_PHOTO__", amenity_set_photo)
     )
