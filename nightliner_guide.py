@@ -24,7 +24,7 @@ def image_data_uri(filename):
 
 def main():
     st.set_page_config(page_title="NIGHTLINER App Guide", layout="wide")
-   seat3_photo = image_data_uri("seat_3_main.jpg")
+    seat3_photo = image_data_uri("seat_3_main.jpg")
     seat4_photo = image_data_uri("seat_4_main.jpg")
     overhead_photo = image_data_uri("seat_overhead_console.jpg")
     amenity_blanket_photo = image_data_uri("amenity_blanket.jpg")
@@ -44,6 +44,7 @@ def main():
     legrest_operation_photo = ""
     armrest_lever_position_photo = ""
     armrest_lever_operation_photo = ""
+    footrest_photo = ""
     footrest_photo = ""
     # 🎯 画面外枠（Streamlit標準のヘッダー・フッター等）を消去するCSS
     st.markdown("""
