@@ -11,6 +11,8 @@ ASSET_DIR = BASE_DIR / "assets"
 def image_data_uri(filename):
     path = ASSET_DIR / filename
     if not path.exists():
+        # ファイルが見つからない場合にターミナル（黒い画面）に警告を出す
+        print(f"⚠️ 画像ファイルが見つかりません: {path}")
         return ""
     mime = {
         ".jpg": "image/jpeg",
